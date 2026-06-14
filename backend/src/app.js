@@ -6,6 +6,8 @@ require("express-async-errors");
 
 const app = express();
 
+const __dirname = path.resolve();
+
 // extra security packages
 const helmet = require("helmet");
 const cors = require('cors');
@@ -41,7 +43,7 @@ app.set('trust proxy', 1);
 if (process.env.NODE_ENV !== "production") {
   app.use(
     cors({
-      origin: "*", // allow requests from this origin (the frontend) "http://localhost:5173"
+      origin: "http://localhost:5173", // allow requests from this origin (the frontend) "http://localhost:5173"
       credentials: true
     })
   );
@@ -68,6 +70,13 @@ app.use("/api/v1/jobs", authenticateUser, limiter, jobsRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));  // serve static files from the frontend's dist folder
+  
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html")); // serve the frontend's index.html for any unmatched routes (for client-side routing)
+  });
+}
 const PORT = process.env.PORT || 3000;
 
 connectDB().then(() => {
