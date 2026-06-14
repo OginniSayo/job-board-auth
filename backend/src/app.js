@@ -6,8 +6,6 @@ require("express-async-errors");
 
 const app = express();
 
-const __dirname = path.resolve();
-
 // extra security packages
 const helmet = require("helmet");
 const cors = require('cors');
@@ -67,9 +65,6 @@ app.use("/api/v1/auth", authRouter);
 // Apply the rate limiting middleware to the jobs routes.
 app.use("/api/v1/jobs", authenticateUser, limiter, jobsRouter);
 
-app.use(notFoundMiddleware);
-app.use(errorHandlerMiddleware);
-
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));  // serve static files from the frontend's dist folder
   
@@ -77,6 +72,10 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html")); // serve the frontend's index.html for any unmatched routes (for client-side routing)
   });
 }
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+
 const PORT = process.env.PORT || 3000;
 
 connectDB().then(() => {
