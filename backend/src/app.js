@@ -66,10 +66,10 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/jobs", authenticateUser, limiter, jobsRouter);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));  // serve static files from the frontend's dist folder
-  
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html")); // serve the frontend's index.html for any unmatched routes (for client-side routing)
+    res.sendFile(path.join(__dirname, "../../frontend", "dist", "index.html"));
   });
 }
 
